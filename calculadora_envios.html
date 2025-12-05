@@ -1,1 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Envíos a Cuba</title>
+    <style>
+        /* Estilos CSS */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 450px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #c40000; /* Color rojo de la imagen */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Asegura que el padding no añada al ancho total */
+        }
+        #resultado {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9e9e9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .price {
+            font-size: 1.8em;
+            color: #007bff; /* Color azul para el precio */
+            font-weight: bold;
+        }
+        .info {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
 
+    <div class="container">
+        <h2>💰 Calculadora de Envíos</h2>
+
+        <label for="peso">Peso de la Caja (Libras - LB):</label>
+        <input type="number" id="peso" min="1" step="any" placeholder="Ej: 30" oninput="calcularPrecio()">
+
+        <label for="servicio">Tipo de Envío:</label>
+        <select id="servicio" onchange="calcularPrecio()">
+            <option value="">-- Seleccione una opción --</option>
+            <option value="maritimo_miscelaneos">Marítimo (Misceláneos y Duraderos)</option>
+            <option value="aereo_express_alimento">Aéreo EXPRESS (Alimento, Aseo y Medicina)</option>
+            <option value="aereo_express_miscelaneos">Aéreo EXPRESS (Misceláneos)</option>
+            <option value="aereo_provincia_miscelaneos">Aéreo 21 DÍAS (Provincias - Misceláneos)</option>
+            <option value="aereo_habana_miscelaneos">Aéreo 21 DÍAS (Habana/Artemisa - Misceláneos)</option>
+        </select>
+
+        <div id="resultado">
+            Seleccione las opciones e ingrese el peso para calcular el precio.
+        </div>
+    </div>
+
+    <script>
+        // Lógica JavaScript
+        function calcularPrecio() {
+            const peso = parseFloat(document.getElementById('peso').value);
+            const servicio = document.getElementById('servicio').value;
+            const resultadoDiv = document.getElementById('resultado');
+
+            // 1. Validar entradas
+            if (isNaN(peso) || peso <= 0 || servicio === "") {
+                resultadoDiv.innerHTML = 'Seleccione las opciones e ingrese el peso para calcular el precio.';
+                return;
+            }
+
+            let precioPorLibra = 0;
+            let pesoMinimo = 0;
+            let tiempoEntrega = "";
+            let nota = "";
+
+            // 2. Definir tarifas y condiciones
+            switch (servicio) {
+                case 'maritimo_miscelaneos':
+                    precioPorLibra = 1.79;
+                    pesoMinimo = 25;
+                    tiempoEntrega = "30-40 días hábiles";
+                    break;
+                case 'aereo_express_alimento':
+                    precioPorLibra = 6.50;
+                    pesoMinimo = 10;
+                    tiempoEntrega = "3-7 días hábiles (Express)";
+                    break;
+                case 'aereo_express_miscelaneos':
+                    precioPorLibra = 4.50;
+                    pesoMinimo = 10;
+                    tiempoEntrega = "3-7 días hábiles (Express)";
+                    break;
+                case 'aereo_provincia_miscelaneos':
+                    precioPorLibra = 3.99;
+                    pesoMinimo = 25;
+                    tiempoEntrega = "21 días hábiles (Provincias)";
+                    break;
+                case 'aereo_habana_miscelaneos':
+                    precioPorLibra = 2.99;
+                    pesoMinimo = 25;
+                    tiempoEntrega = "21 días hábiles (Habana/Artemisa)";
+                    break;
+            }
+
+            // 3. Aplicar peso mínimo
+            const pesoACobrar = Math.max(peso, pesoMinimo);
+            if (peso < pesoACobrar) {
+                nota = `<br>Se aplicó el peso mínimo de **${pesoMinimo} LB** para este servicio.`;
+            }
+
+            // 4. Calcular el precio total
+            const precioTotal = (pesoACobrar * precioPorLibra).toFixed(2);
+            
+            // 5. Mostrar resultado
+            resultadoDiv.innerHTML = `
+                <div class="price">Total Estimado: $${precioTotal} USD</div>
+                <div class="info">Tarifa por LB: $${precioPorLibra.toFixed(2)}</div>
+                <div class="info">Peso a Cobrar: ${pesoACobrar} LB</div>
+                <div class="info">Entrega Estimada: **${tiempoEntrega}**</div>
+                <div class="info">${nota}</div>
+            `;
+        }
+    </script>
+
+</body>
+</html>
